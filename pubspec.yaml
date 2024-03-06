@@ -1,0 +1,24 @@
+name: flutter_firebase_camera_challenge
+description: A new Flutter project.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.0.1 <4.0.0"
+
+dependencies:
+  camerawesome: ^1.4.0
+  cloud_firestore: ^4.4.5
+  firebase_core: ^2.3.0
+  firebase_storage: ^11.0.16
+  flutter:
+    sdk: flutter
+  riverpod: ^2.5.0
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
