@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "111695129746",
+    "project_id": "flutter-camera-challenge",
+    "storage_bucket": "flutter-camera-challenge.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111695129746:android:641b3b1bf7f5e46a3e0a4b",
+        "android_client_info": {
+          "package_name": "com.example.flutter_firebase_camera_challenge"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdZJ955ml85FcQVaAfSU_utvemlG-tsyU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
