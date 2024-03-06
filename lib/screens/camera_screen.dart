@@ -1,6 +1,9 @@
-import 'package:better_open_file/better_open_file.dart';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
+import 'package:flutter_firebase_camera_challenge/services/firebase_service.dart';
 import 'package:flutter_firebase_camera_challenge/utils/file_utils.dart';
 
 class CameraScreen extends StatelessWidget {
@@ -13,7 +16,15 @@ class CameraScreen extends StatelessWidget {
         title: const Text('Camera Screen'),
       ),
       body: CameraAwesomeBuilder.awesome(
-        saveConfig: SaveConfig.photo(pathBuilder: () => path()),
+        saveConfig: SaveConfig.photo(pathBuilder: () async {
+          final tempPath = await path();
+          //add to Firebase store
+
+          Future.delayed(const Duration(milliseconds: 500)).then((value) async {
+            await _uploadToFStore(tempPath, context);
+          });
+          return tempPath;
+        }),
         topActionsBuilder: (state) => AwesomeTopActions(
           padding: EdgeInsets.zero,
           state: state,
@@ -58,9 +69,35 @@ class CameraScreen extends StatelessWidget {
         aspectRatio: CameraAspectRatios.ratio_16_9,
         previewFit: CameraPreviewFit.fitWidth,
         onMediaTap: (mediaCapture) {
-          OpenFile.open(mediaCapture.filePath);
+          print(mediaCapture.filePath);
         },
+        bottomActionsBuilder: (state) => AwesomeBottomActions(
+          state: state,
+          left: AwesomeFlashButton(
+            state: state,
+          ),
+          right: AwesomeCameraSwitchButton(
+            state: state,
+            scale: 1.0,
+            onSwitchTap: (state) {
+              state.switchCameraSensor(
+                aspectRatio: state.sensorConfig.aspectRatio,
+              );
+            },
+          ),
+        ),
       ),
     );
+  }
+
+  Future<void> _uploadToFStore(String pathBuild, BuildContext context) async {
+    Navigator.pop(context);
+    final firebaseStorageRef = firebase_storage.FirebaseStorage.instance.ref();
+    final file = File(pathBuild);
+    firebase_storage.UploadTask task = firebaseStorageRef.child('uploads/${file.path.split('/').last}').putFile(file);
+    task.then((snapshot) async {
+      var url = await snapshot.ref.getDownloadURL();
+      addUpload(url).then((value) {});
+    });
   }
 }

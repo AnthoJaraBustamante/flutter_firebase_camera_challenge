@@ -9,7 +9,11 @@ Future<void> addUpload(String url) {
   });
 }
 
-Future<List<DocumentSnapshot>> getUploads() async {
-  final snapshot = await db.collection('uploads').get();
-  return snapshot.docs;
+Future<void> deleteUpload(String id) {
+  return db.collection('uploads').doc(id).delete();
+}
+
+Stream<List<DocumentSnapshot>> getUploads() {
+  final snapshot = db.collection('uploads').orderBy('created_at', descending: true).snapshots();
+  return snapshot.map((event) => event.docs);
 }
