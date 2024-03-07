@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_camera_challenge/providers/upload_providers.dart';
+import 'package:flutter_firebase_camera_challenge/screens/camera_screen.dart';
 import 'package:flutter_firebase_camera_challenge/screens/uploaded_photo_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -47,10 +48,11 @@ class PhotosList extends StatelessWidget {
     return ListView.builder(
       itemCount: uploads.length,
       itemBuilder: (context, index) {
-        final upload = uploads[index];
+        final DocumentSnapshot<Object?> upload = uploads[index];
         final url = upload['url'] ?? 'No URL found';
         final createdAt = upload['created_at'] as Timestamp? ?? Timestamp.now();
-
+        final updatedAt = upload.data().toString().contains('updated_at') ? upload['updated_at'] as Timestamp? : null;
+ 
         return InkWell(
           onDoubleTap: () {
             Navigator.push(
@@ -97,7 +99,7 @@ class PhotosList extends StatelessWidget {
                         ),
                         Positioned(
                           right: 8,
-                          top: 8,
+                          top: 48,
                           child: IconButton(
                             icon: const Icon(Icons.delete),
                             onPressed: () {
@@ -116,7 +118,7 @@ class PhotosList extends StatelessWidget {
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          deleteUpload(upload.id);
+                                          FirebaseService().deleteUpload(upload.id);
                                           Navigator.pop(context);
                                         },
                                         child: const Text('Delete'),
@@ -144,6 +146,24 @@ class PhotosList extends StatelessWidget {
                             },
                           ),
                         ),
+                        // Edit icon button,
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CameraScreen(
+                                    id: upload.id,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -166,7 +186,15 @@ class PhotosList extends StatelessWidget {
                           color: Colors.grey,
                           fontSize: 12,
                         ),
-                      ),
+                      ), 
+                      if (updatedAt != null)
+                        Text(
+                          'Updated on ${DateFormat('MMMM d, y H:mm').format(updatedAt.toDate())}',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
                     ],
                   ),
                 ),

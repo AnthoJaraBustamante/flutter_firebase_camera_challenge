@@ -7,8 +7,9 @@ import 'package:flutter_firebase_camera_challenge/services/firebase_service.dart
 import 'package:flutter_firebase_camera_challenge/utils/file_utils.dart';
 
 class CameraScreen extends StatelessWidget {
-  const CameraScreen({super.key});
+  const CameraScreen({super.key, this.id});
 
+  final String? id;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +22,7 @@ class CameraScreen extends StatelessWidget {
           //add to Firebase store
 
           Future.delayed(const Duration(milliseconds: 500)).then((value) async {
-            await _uploadToFStore(tempPath, context);
+            await _uploadToFStore(tempPath, context, id);
           });
           return tempPath;
         }),
@@ -90,14 +91,17 @@ class CameraScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _uploadToFStore(String pathBuild, BuildContext context) async {
+  Future<void> _uploadToFStore(String pathBuild, BuildContext context, String? id) async {
     Navigator.pop(context);
-    final firebaseStorageRef = firebase_storage.FirebaseStorage.instance.ref();
-    final file = File(pathBuild);
-    firebase_storage.UploadTask task = firebaseStorageRef.child('uploads/${file.path.split('/').last}').putFile(file);
-    task.then((snapshot) async {
-      var url = await snapshot.ref.getDownloadURL();
-      addUpload(url).then((value) {});
-    });
+    try {
+      final uploadedUrl = await FirebaseService().uploadToFStore(pathBuild);
+      if (id != null) {
+        await FirebaseService().editUpload(id, uploadedUrl);
+        return;
+      }
+      FirebaseService().addUpload(uploadedUrl);
+    } on Exception catch (e) {
+      throw Exception(e);
+    }
   }
 }
