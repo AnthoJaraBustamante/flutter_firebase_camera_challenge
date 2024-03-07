@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter_firebase_camera_challenge/services/firebase_service.dart';
@@ -19,7 +16,6 @@ class CameraScreen extends StatelessWidget {
       body: CameraAwesomeBuilder.awesome(
         saveConfig: SaveConfig.photo(pathBuilder: () async {
           final tempPath = await path();
-          //add to Firebase store
 
           Future.delayed(const Duration(milliseconds: 500)).then((value) async {
             await _uploadToFStore(tempPath, context, id);
