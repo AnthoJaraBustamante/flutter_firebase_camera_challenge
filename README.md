@@ -34,3 +34,4 @@ The app comprises at least three screens:
 2. Ensure that Flutter is installed on your development environment.
 3. Run `flutter pub get` to fetch the required dependencies.
 4. Launch the app using `flutter run`.
+
